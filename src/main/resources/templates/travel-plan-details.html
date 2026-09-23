@@ -32,8 +32,6 @@
                               th:text="${travelPlan.destination}">
                               Destination
                         </span>
-                        <span style="color:var(--c-light-200); font-size:0.85rem;" 
-                              th:text="'Managed by ' + ${travelPlan.userId}">User</span>
                     </div>
                     <h1 class="details-hero-title" th:text="${travelPlan.title}">Executive Trip Title</h1>
                 </div>
@@ -90,8 +88,7 @@
 
         <!-- Budget Utilization Card -->
         <section class="budget-meter-wrap" aria-label="Budget Progress">
-            <!-- Compute total logged expense -->
-            <div th:with="totalExp=${travelPlan.expenses != null ? #aggregates.sum(travelPlan.expenses.![amount != null ? amount : 0.0]) : 0.0}">
+            <div>
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
                     <div>
                         <h3 style="font-size:1.15rem; font-weight:800; color:var(--c-deep-900);">Financial Budget Tracker</h3>
@@ -100,7 +97,7 @@
                     <div style="text-align:right;">
                         <span style="font-size:0.85rem; font-weight:600; color:var(--c-text-muted);">Logged Expenditure: </span>
                         <strong style="font-size:1.15rem; color:var(--c-deep-800);" 
-                                th:text="'$' + ${#numbers.formatDecimal(totalExp != null ? totalExp : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</strong>
+                                th:text="'$' + ${#numbers.formatDecimal(totalExpenses != null ? totalExpenses : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</strong>
                         <span style="color:var(--c-text-light);"> / </span>
                         <span style="font-weight:700; color:var(--c-deep-900);" 
                               th:text="'$' + ${#numbers.formatDecimal(travelPlan.budget != null ? travelPlan.budget : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
@@ -110,14 +107,14 @@
                 <!-- Solid Green Meter Track (No Gradients) -->
                 <div class="meter-track">
                     <div class="meter-fill" 
-                         th:style="'width: ' + ${travelPlan.budget != null and travelPlan.budget > 0 and totalExp != null ? #numbers.formatDecimal((totalExp / travelPlan.budget) * 100 > 100 ? 100 : (totalExp / travelPlan.budget) * 100, 1, 0) : 0} + '%;'"
-                         th:classappend="${totalExp != null and travelPlan.budget != null and totalExp > travelPlan.budget ? 'danger' : ''}">
+                         th:style="'width: ' + ${budgetPercent != null ? #numbers.formatDecimal(budgetPercent, 1, 0) : 0} + '%;'"
+                         th:classappend="${totalExpenses != null and travelPlan.budget != null and totalExpenses > travelPlan.budget ? 'danger' : ''}">
                     </div>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--c-text-light);">
                     <span>0% Spent</span>
-                    <span th:text="${totalExp != null and travelPlan.budget != null and travelPlan.budget > 0 ? #numbers.formatDecimal((totalExp / travelPlan.budget) * 100, 1, 1) + '% of budget utilized' : '0%'}">0%</span>
+                    <span th:text="${budgetPercent != null ? #numbers.formatDecimal(budgetPercent, 1, 1) + '% of budget utilized' : '0%'}">0%</span>
                     <span th:text="'Budget Cap: $' + ${#numbers.formatDecimal(travelPlan.budget != null ? travelPlan.budget : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
                 </div>
             </div>
@@ -197,7 +194,7 @@
                         <tr style="background-color:var(--c-surface-soft); font-weight:800;">
                             <td colspan="2" style="padding:1rem 1.25rem; font-size:1rem; color:var(--c-deep-900);">Total Itemized Costs</td>
                             <td style="padding:1rem 1.25rem; text-align:right; font-size:1.1rem; color:var(--c-deep-800);"
-                                th:text="'$' + ${#numbers.formatDecimal(#aggregates.sum(travelPlan.expenses.![amount != null ? amount : 0.0]), 1, 'COMMA', 2, 'POINT')}">
+                                th:text="'$' + ${#numbers.formatDecimal(totalExpenses != null ? totalExpenses : 0.0, 1, 'COMMA', 2, 'POINT')}">
                                 $0.00
                             </td>
                         </tr>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Notice | Travel Planner</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/logo.svg}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/navbar :: siteNavbar('error')}"></div>
+
+    <main class="main-content" style="display:flex; align-items:center; justify-content:center; min-height:65vh;">
+        <div class="form-card" style="max-width:620px; width:100%; text-align:center; padding:3rem 2rem;">
+            <div style="width:70px; height:70px; border-radius:50%; background-color:var(--c-light-100); border:2px solid var(--c-light-300); color:var(--c-deep-800); display:inline-flex; align-items:center; justify-content:center; font-size:2rem; margin-bottom:1.25rem;">
+                ⚠️
+            </div>
+            <h2 style="font-size:1.6rem; font-weight:800; color:var(--c-deep-900); margin-bottom:0.75rem;">
+                Temporary Service Notification
+            </h2>
+            <p style="color:var(--c-text-muted); font-size:0.95rem; margin-bottom:1.5rem; line-height:1.6;">
+                The travel operations service encountered an issue processing your request. If you recently deployed to Render, please ensure your MongoDB Atlas IP Whitelist includes <strong style="color:var(--c-deep-900);">0.0.0.0/0 (Allow from Anywhere)</strong>.
+            </p>
+
+            <div th:if="${errorMessage != null or message != null}" 
+                 style="background-color:var(--c-surface-soft); border:1px solid var(--c-border); border-radius:var(--radius-md); padding:1rem; text-align:left; font-family:monospace; font-size:0.85rem; color:var(--c-deep-900); margin-bottom:1.75rem; word-break:break-all;"
+                 th:text="${errorMessage != null ? errorMessage : message}">
+                 Error details
+            </div>
+
+            <div style="display:flex; gap:1rem; justify-content:center;">
+                <a th:href="@{/travel-planner}" class="btn btn-primary">
+                    Return to Dashboard
+                </a>
+                <a th:href="@{/travel-planner/new}" class="btn btn-secondary">
+                    Create New Plan
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/navbar :: siteFooter}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
