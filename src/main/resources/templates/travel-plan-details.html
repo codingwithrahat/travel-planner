@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${travelPlan.title} + ' | Journey Dossier'">Travel Plan Details</title>
+    <meta name="description" content="Comprehensive itinerary checkpoints and expense log.">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/logo.svg}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Executive Navbar -->
+    <div th:replace="~{fragments/navbar :: siteNavbar('details')}"></div>
+
+    <main class="main-content">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb-bar" aria-label="Breadcrumb">
+            <a th:href="@{/travel-planner}">Dashboard</a>
+            <span>&rsaquo;</span>
+            <span th:text="${travelPlan.destination}">Destination</span>
+            <span>&rsaquo;</span>
+            <span th:text="${travelPlan.title}">Title</span>
+        </nav>
+
+        <!-- Details Hero -->
+        <section class="details-hero">
+            <div class="details-hero-top">
+                <div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                        <span style="background-color:var(--c-deep-700); color:var(--c-mint-300); font-size:0.8rem; font-weight:700; padding:0.25rem 0.75rem; border-radius:var(--radius-full); text-transform:uppercase; letter-spacing:0.05em;"
+                              th:text="${travelPlan.destination}">
+                              Destination
+                        </span>
+                        <span style="color:var(--c-light-200); font-size:0.85rem;" 
+                              th:text="'Managed by ' + ${travelPlan.userId}">User</span>
+                    </div>
+                    <h1 class="details-hero-title" th:text="${travelPlan.title}">Executive Trip Title</h1>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                    <span th:class="'status-badge status-' + ${#strings.toLowerCase(travelPlan.status)}"
+                          th:text="${travelPlan.status}">
+                          STATUS
+                    </span>
+                    <a th:href="@{'/travel-planner/edit/' + ${travelPlan.id}}" class="btn btn-secondary btn-sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Edit Plan
+                    </a>
+                    <button type="button" onclick="window.print()" class="btn btn-light btn-sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        Print Dossier
+                    </button>
+                </div>
+            </div>
+
+            <!-- Meta Strip -->
+            <div class="details-meta-grid">
+                <div>
+                    <div class="meta-item-label">Schedule Window</div>
+                    <div class="meta-item-val" 
+                         th:text="${travelPlan.startDate} + ' &rarr; ' + ${travelPlan.endDate}">
+                         Dates
+                    </div>
+                </div>
+                <div>
+                    <div class="meta-item-label">Departure Hub</div>
+                    <div class="meta-item-val" th:text="${travelPlan.startLocation}">Origin</div>
+                </div>
+                <div>
+                    <div class="meta-item-label">Transit Mode</div>
+                    <div class="meta-item-val" th:text="${travelPlan.transport}">Transport</div>
+                </div>
+                <div>
+                    <div class="meta-item-label">Allocated Budget</div>
+                    <div class="meta-item-val" style="color:var(--c-mint-300);"
+                         th:text="'$' + ${#numbers.formatDecimal(travelPlan.budget != null ? travelPlan.budget : 0.0, 1, 'COMMA', 2, 'POINT')}">
+                         $0.00
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Budget Utilization Card -->
+        <section class="budget-meter-wrap" aria-label="Budget Progress">
+            <!-- Compute total logged expense -->
+            <div th:with="totalExp=${travelPlan.expenses != null ? #aggregates.sum(travelPlan.expenses.![amount != null ? amount : 0.0]) : 0.0}">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                    <div>
+                        <h3 style="font-size:1.15rem; font-weight:800; color:var(--c-deep-900);">Financial Budget Tracker</h3>
+                        <p style="font-size:0.85rem; color:var(--c-text-muted);">Real-time logged expenditure vs established budget allocation.</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="font-size:0.85rem; font-weight:600; color:var(--c-text-muted);">Logged Expenditure: </span>
+                        <strong style="font-size:1.15rem; color:var(--c-deep-800);" 
+                                th:text="'$' + ${#numbers.formatDecimal(totalExp != null ? totalExp : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</strong>
+                        <span style="color:var(--c-text-light);"> / </span>
+                        <span style="font-weight:700; color:var(--c-deep-900);" 
+                              th:text="'$' + ${#numbers.formatDecimal(travelPlan.budget != null ? travelPlan.budget : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Solid Green Meter Track (No Gradients) -->
+                <div class="meter-track">
+                    <div class="meter-fill" 
+                         th:style="'width: ' + ${travelPlan.budget != null and travelPlan.budget > 0 and totalExp != null ? #numbers.formatDecimal((totalExp / travelPlan.budget) * 100 > 100 ? 100 : (totalExp / travelPlan.budget) * 100, 1, 0) : 0} + '%;'"
+                         th:classappend="${totalExp != null and travelPlan.budget != null and totalExp > travelPlan.budget ? 'danger' : ''}">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--c-text-light);">
+                    <span>0% Spent</span>
+                    <span th:text="${totalExp != null and travelPlan.budget != null and travelPlan.budget > 0 ? #numbers.formatDecimal((totalExp / travelPlan.budget) * 100, 1, 1) + '% of budget utilized' : '0%'}">0%</span>
+                    <span th:text="'Budget Cap: $' + ${#numbers.formatDecimal(travelPlan.budget != null ? travelPlan.budget : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Itinerary Schedule Section -->
+        <section style="margin-top:2.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                <h2 style="font-size:1.4rem; font-weight:800; color:var(--c-deep-900); display:flex; align-items:center; gap:0.5rem;">
+                    <span>📍</span> Day-by-Day Journey Itinerary
+                </h2>
+                <a th:href="@{'/travel-planner/edit/' + ${travelPlan.id}}" class="btn btn-secondary btn-sm">
+                    + Add / Edit Stops
+                </a>
+            </div>
+
+            <!-- Timeline -->
+            <div th:if="${travelPlan.itinerary != null and !#lists.isEmpty(travelPlan.itinerary)}" class="timeline-container">
+                <div th:each="stop : ${travelPlan.itinerary}" class="timeline-node">
+                    <div class="timeline-pin"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-card-header">
+                            <span class="timeline-day-pill" th:text="'Day ' + ${stop.day}">Day 1</span>
+                            <span class="timeline-time" th:text="${stop.time}">09:00 AM</span>
+                        </div>
+                        <h3 class="timeline-place" th:text="${stop.place}">Attraction / Landmark</h3>
+                        <p class="timeline-note" th:if="${stop.note != null and !#strings.isEmpty(stop.note)}" th:text="${stop.note}">
+                            Tour notes and activities.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${travelPlan.itinerary == null or #lists.isEmpty(travelPlan.itinerary)}" class="empty-state" style="padding:2.5rem 1.5rem;">
+                <div class="empty-state-icon" style="width:50px; height:50px; font-size:1.3rem;">📌</div>
+                <h3>No Itinerary Stops Defined</h3>
+                <p>Add scheduled visits, tours, and meeting checkpoints for each day.</p>
+                <a th:href="@{'/travel-planner/edit/' + ${travelPlan.id}}" class="btn btn-primary btn-sm">
+                    Configure Schedule
+                </a>
+            </div>
+        </section>
+
+        <!-- Itemized Expenses Table -->
+        <section style="margin-top:2.5rem; margin-bottom:2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                <h2 style="font-size:1.4rem; font-weight:800; color:var(--c-deep-900); display:flex; align-items:center; gap:0.5rem;">
+                    <span>💳</span> Itemized Cost Breakdown
+                </h2>
+                <a th:href="@{'/travel-planner/edit/' + ${travelPlan.id}}" class="btn btn-secondary btn-sm">
+                    + Record Expense
+                </a>
+            </div>
+
+            <div th:if="${travelPlan.expenses != null and !#lists.isEmpty(travelPlan.expenses)}" class="expenses-table-wrap">
+                <table class="expenses-table">
+                    <thead>
+                        <tr>
+                            <th style="width:25%;">Category</th>
+                            <th style="width:45%;">Description</th>
+                            <th style="width:30%; text-align:right;">Amount ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="expense : ${travelPlan.expenses}">
+                            <td>
+                                <span class="badge-tag" th:text="${expense.category}">Category</span>
+                            </td>
+                            <td th:text="${expense.description != null ? expense.description : '-'}">Description</td>
+                            <td style="text-align:right; font-weight:700; color:var(--c-deep-900);" 
+                                th:text="'$' + ${#numbers.formatDecimal(expense.amount != null ? expense.amount : 0.0, 1, 'COMMA', 2, 'POINT')}">
+                                $0.00
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background-color:var(--c-surface-soft); font-weight:800;">
+                            <td colspan="2" style="padding:1rem 1.25rem; font-size:1rem; color:var(--c-deep-900);">Total Itemized Costs</td>
+                            <td style="padding:1rem 1.25rem; text-align:right; font-size:1.1rem; color:var(--c-deep-800);"
+                                th:text="'$' + ${#numbers.formatDecimal(#aggregates.sum(travelPlan.expenses.![amount != null ? amount : 0.0]), 1, 'COMMA', 2, 'POINT')}">
+                                $0.00
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div th:if="${travelPlan.expenses == null or #lists.isEmpty(travelPlan.expenses)}" class="empty-state" style="padding:2.5rem 1.5rem;">
+                <div class="empty-state-icon" style="width:50px; height:50px; font-size:1.3rem;">🧾</div>
+                <h3>No Expenses Recorded</h3>
+                <p>Keep track of flights, hotels, food, and tours to manage travel budgets effectively.</p>
+                <a th:href="@{'/travel-planner/edit/' + ${travelPlan.id}}" class="btn btn-primary btn-sm">
+                    Add Expenses
+                </a>
+            </div>
+        </section>
+
+        <!-- Bottom Actions -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:1.5rem; border-top:1px solid var(--c-border); margin-top:2rem;">
+            <a th:href="@{/travel-planner}" class="btn btn-secondary">
+                &larr; Back to Dashboard
+            </a>
+
+            <form th:action="@{'/travel-planner/delete/' + ${travelPlan.id}}" method="post">
+                <button type="submit" class="btn btn-danger">
+                    Delete Journey
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Executive Footer -->
+    <div th:replace="~{fragments/navbar :: siteFooter}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner | Professional Journey &amp; Expense Management</title>
+    <meta name="description" content="Plan, organize, and monitor itineraries, budgets, and travel expenses in one centralized, professional dashboard.">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/logo.svg}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Executive Navbar -->
+    <div th:replace="~{fragments/navbar :: siteNavbar('dashboard')}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Title Header -->
+        <header class="page-header">
+            <div class="page-title-group">
+                <h1>Travel Operations Dashboard</h1>
+                <p>Monitor itineraries, schedule checkpoints, and keep travel expenses under budget.</p>
+            </div>
+            <a th:href="@{/travel-planner/new}" class="btn btn-primary btn-lg" id="btnCreateNewTrip">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Create Travel Plan
+            </a>
+        </header>
+
+        <!-- KPI Metrics Grid -->
+        <section class="stats-grid" aria-label="Key Travel Metrics">
+            <div class="stat-card">
+                <div class="stat-icon">🗺️</div>
+                <div class="stat-body">
+                    <div class="stat-label">Total Plans</div>
+                    <div class="stat-value" th:text="${travelPlans != null ? #lists.size(travelPlans) : 0}">0</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-active">
+                <div class="stat-icon">✈️</div>
+                <div class="stat-body">
+                    <div class="stat-label">Active Journeys</div>
+                    <div class="stat-value" th:text="${travelPlans != null ? #lists.size(travelPlans.?[status != null and status.toUpperCase() == 'ONGOING']) : 0}">0</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-planned">
+                <div class="stat-icon">📅</div>
+                <div class="stat-body">
+                    <div class="stat-label">Upcoming Plans</div>
+                    <div class="stat-value" th:text="${travelPlans != null ? #lists.size(travelPlans.?[status != null and status.toUpperCase() == 'PLANNED']) : 0}">0</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-budget">
+                <div class="stat-icon">💵</div>
+                <div class="stat-body">
+                    <div class="stat-label">Allocated Budget</div>
+                    <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(travelPlans != null ? #aggregates.sum(travelPlans.![budget != null ? budget : 0.0]) : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls: Real-time Search & Filter Pills -->
+        <div class="controls-card">
+            <div class="search-box-wrap">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="tripSearchInput" class="search-input" placeholder="Search by destination, title, or starting point..." />
+            </div>
+
+            <div class="filter-pills" role="tablist">
+                <button type="button" class="filter-btn active" data-filter="ALL">All Trips</button>
+                <button type="button" class="filter-btn" data-filter="ONGOING">Ongoing</button>
+                <button type="button" class="filter-btn" data-filter="PLANNED">Planned</button>
+                <button type="button" class="filter-btn" data-filter="COMPLETED">Completed</button>
+                <button type="button" class="filter-btn" data-filter="CANCELLED">Cancelled</button>
+            </div>
+        </div>
+
+        <!-- Trips Cards Grid -->
+        <section class="trips-grid" id="tripsGridContainer">
+            <!-- Iterate Travel Plans -->
+            <article class="trip-card" th:each="plan : ${travelPlans}" 
+                     th:attr="data-status=${plan.status}">
+                <div class="trip-card-header">
+                    <div class="trip-card-title-wrap">
+                        <div class="trip-destination-pill">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span th:text="${plan.destination}">Destination</span>
+                        </div>
+                        <h2 class="trip-title" th:text="${plan.title}">Trip Title</h2>
+                    </div>
+                    <span th:class="'status-badge status-' + ${#strings.toLowerCase(plan.status)}"
+                          th:text="${plan.status}">
+                          STATUS
+                    </span>
+                </div>
+
+                <div class="trip-card-body">
+                    <div class="trip-info-row">
+                        <span class="trip-info-item">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Dates:
+                        </span>
+                        <span class="trip-info-value" 
+                              th:text="${plan.startDate != null ? plan.startDate : ''} + ' &rarr; ' + ${plan.endDate != null ? plan.endDate : ''}">
+                              2026-10-01 &rarr; 2026-10-10
+                        </span>
+                    </div>
+
+                    <div class="trip-info-row">
+                        <span class="trip-info-item">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            From:
+                        </span>
+                        <span class="trip-info-value" th:text="${plan.startLocation}">Departure City</span>
+                    </div>
+
+                    <div class="trip-info-row">
+                        <span class="trip-info-item">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                            Budget:
+                        </span>
+                        <span class="trip-info-value" style="color:var(--c-deep-700); font-weight:800;"
+                              th:text="'$' + ${#numbers.formatDecimal(plan.budget != null ? plan.budget : 0.0, 1, 'COMMA', 2, 'POINT')}">
+                              $0.00
+                        </span>
+                    </div>
+
+                    <div class="trip-badges-strip">
+                        <span class="badge-tag">
+                            <span>🚀</span>
+                            <span th:text="${plan.transport}">Transport</span>
+                        </span>
+                        <span class="badge-tag">
+                            <span>📍</span>
+                            <span th:text="${plan.itinerary != null ? #lists.size(plan.itinerary) + ' Stops' : '0 Stops'}">0 Stops</span>
+                        </span>
+                        <span class="badge-tag">
+                            <span>💳</span>
+                            <span th:text="${plan.expenses != null ? #lists.size(plan.expenses) + ' Expenses' : '0 Expenses'}">0 Expenses</span>
+                        </span>
+                        <span class="badge-tag" style="color:var(--c-text-light);">
+                            <span>ID:</span>
+                            <span th:text="${plan.userId}">User</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="trip-card-footer">
+                    <button type="button" class="btn btn-secondary btn-sm btn-quick-view"
+                            th:attr="data-id=${plan.id}, 
+                                     data-title=${plan.title}, 
+                                     data-destination=${plan.destination}, 
+                                     data-dates=${(plan.startDate != null ? plan.startDate : '') + ' to ' + (plan.endDate != null ? plan.endDate : '')}, 
+                                     data-budget=${plan.budget}, 
+                                     data-status=${plan.status}, 
+                                     data-transport=${plan.transport}">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Quick View
+                    </button>
+
+                    <div class="footer-actions">
+                        <a th:href="@{'/travel-planner/' + ${plan.id}}" class="btn btn-light btn-sm" title="Detailed Itinerary &amp; Finances">
+                            Details
+                        </a>
+                        <a th:href="@{'/travel-planner/edit/' + ${plan.id}}" class="btn btn-secondary btn-sm" title="Edit Plan">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                        </a>
+                        <form th:action="@{'/travel-planner/delete/' + ${plan.id}}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Delete Plan">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Initial Empty State if no plans exist in DB -->
+            <div th:if="${travelPlans == null or #lists.isEmpty(travelPlans)}" class="empty-state">
+                <div class="empty-state-icon">🌍</div>
+                <h3>No Travel Plans Recorded</h3>
+                <p>Start planning your next voyage. Add custom routes, timetable checkpoints, and financial expense projections.</p>
+                <a th:href="@{/travel-planner/new}" class="btn btn-primary btn-lg">
+                    Create Your First Travel Plan
+                </a>
+            </div>
+
+            <!-- Dynamic Filter No-Results State -->
+            <div id="emptyFilterState" class="empty-state" style="display:none;">
+                <div class="empty-state-icon">🔍</div>
+                <h3>No Matching Journeys</h3>
+                <p>No trips match your current filter or search criteria. Try modifying your query.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Quick-View Modal -->
+    <div id="tripQuickModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTripTitle">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="modalTripTitle" class="modal-title">Trip Overview</h3>
+                <button type="button" id="closeModalBtn" class="modal-close-btn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                    <div>
+                        <div style="font-size:0.8rem; color:var(--c-text-muted); font-weight:700;">DESTINATION</div>
+                        <div id="modalTripDest" style="font-size:1.3rem; font-weight:800; color:var(--c-deep-900);">City</div>
+                    </div>
+                    <span id="modalTripStatus" class="status-badge status-planned">PLANNED</span>
+                </div>
+
+                <div style="background-color:var(--c-surface-soft); border:1px solid var(--c-border); border-radius:var(--radius-md); padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                    <div>
+                        <div style="font-size:0.75rem; color:var(--c-text-light); font-weight:700;">SCHEDULE DATES</div>
+                        <div id="modalTripDates" style="font-size:0.95rem; font-weight:700; color:var(--c-deep-900);">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.75rem; color:var(--c-text-light); font-weight:700;">TRANSPORTATION</div>
+                        <div id="modalTripTransport" style="font-size:0.95rem; font-weight:700; color:var(--c-deep-900);">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.75rem; color:var(--c-text-light); font-weight:700;">BUDGET CAP</div>
+                        <div id="modalTripBudget" style="font-size:1.1rem; font-weight:800; color:var(--c-deep-700);">-</div>
+                    </div>
+                </div>
+
+                <p style="font-size:0.875rem; color:var(--c-text-muted);">
+                    Click below to access the complete day-by-day itinerary timeline, itemized expense receipts, and budget tracker.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="modalFooterCloseBtn" class="btn btn-secondary btn-sm">Close</button>
+                <a id="modalFullDetailLink" href="#" class="btn btn-primary btn-sm">Open Full Details &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executive Footer -->
+    <div th:replace="~{fragments/navbar :: siteFooter}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

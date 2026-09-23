@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${travelPlan.id != null ? 'Edit Travel Plan | Travel Planner' : 'Create Travel Plan | Travel Planner'}">Travel Plan Form</title>
+    <meta name="description" content="Configure journey details, itineraries, and expense budgets.">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/logo.svg}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Executive Navbar -->
+    <div th:replace="~{fragments/navbar :: siteNavbar('form')}"></div>
+
+    <main class="main-content">
+        <div class="form-page-container">
+            <!-- Breadcrumbs -->
+            <nav class="breadcrumb-bar" aria-label="Breadcrumb">
+                <a th:href="@{/travel-planner}">Dashboard</a>
+                <span>&rsaquo;</span>
+                <span th:text="${travelPlan.id != null ? 'Edit Journey' : 'New Journey'}">New Journey</span>
+            </nav>
+
+            <div class="form-card">
+                <!-- Header Banner -->
+                <div class="form-header-banner">
+                    <h2 th:text="${travelPlan.id != null ? 'Edit Travel Itinerary' : 'Create New Journey'}">Travel Plan</h2>
+                    <p>Specify flight/transit logistics, timetable milestones, and financial budget caps.</p>
+                </div>
+
+                <form th:action="${travelPlan.id != null ? '/travel-planner/update/' + travelPlan.id : '/travel-planner'}" 
+                      th:object="${travelPlan}" 
+                      method="post" 
+                      id="travelPlanForm">
+
+                    <div class="form-body">
+                        <!-- SECTION 1: Core Logistics -->
+                        <section class="form-section">
+                            <div class="section-title-wrap">
+                                <h3 class="section-title">
+                                    <span class="section-badge">1</span>
+                                    Voyage Information &amp; Logistics
+                                </h3>
+                            </div>
+
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="userId">Corporate / User ID <span class="required">*</span></label>
+                                    <input type="text" id="userId" th:field="*{userId}" class="form-control" 
+                                           th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid' : ''"
+                                           placeholder="e.g. USER-8842 or your name" />
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="title">Journey Title <span class="required">*</span></label>
+                                    <input type="text" id="title" th:field="*{title}" class="form-control" 
+                                           th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
+                                           placeholder="e.g. Q4 Executive Summit in Tokyo" />
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="startLocation">Departure City / Origin <span class="required">*</span></label>
+                                    <input type="text" id="startLocation" th:field="*{startLocation}" class="form-control" 
+                                           th:classappend="${#fields.hasErrors('startLocation')} ? 'is-invalid' : ''"
+                                           placeholder="e.g. San Francisco (SFO)" />
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('startLocation')}" th:errors="*{startLocation}"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="destination">Target Destination <span class="required">*</span></label>
+                                    <input type="text" id="destination" th:field="*{destination}" class="form-control" 
+                                           th:classappend="${#fields.hasErrors('destination')} ? 'is-invalid' : ''"
+                                           placeholder="e.g. Tokyo, Japan" />
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('destination')}" th:errors="*{destination}"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="startDate">Departure Date <span class="required">*</span></label>
+                                    <input type="date" id="startDate" th:field="*{startDate}" class="form-control" 
+                                           th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid' : ''" />
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="endDate">Return Date <span class="required">*</span></label>
+                                    <input type="date" id="endDate" th:field="*{endDate}" class="form-control" 
+                                           th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid' : ''" />
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-grid-3">
+                                <div class="form-group">
+                                    <label class="form-label" for="budget">Total Allocated Budget ($) <span class="required">*</span></label>
+                                    <input type="number" step="0.01" min="0" id="budget" th:field="*{budget}" class="form-control" 
+                                           th:classappend="${#fields.hasErrors('budget')} ? 'is-invalid' : ''"
+                                           placeholder="e.g. 3500.00" />
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('budget')}" th:errors="*{budget}"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="transport">Primary Transport <span class="required">*</span></label>
+                                    <select id="transport" th:field="*{transport}" class="form-control"
+                                            th:classappend="${#fields.hasErrors('transport')} ? 'is-invalid' : ''">
+                                        <option value="">-- Select Transport --</option>
+                                        <option value="Flight">✈️ Flight</option>
+                                        <option value="Train / Rail">🚆 High-Speed Rail / Train</option>
+                                        <option value="Automobile / Rental">🚗 Automobile / Car Rental</option>
+                                        <option value="Luxury Coach / Bus">🚌 Luxury Coach</option>
+                                        <option value="Cruise / Ferry">🚢 Cruise / Maritime</option>
+                                        <option value="Other">🗺️ Other Multi-modal</option>
+                                    </select>
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('transport')}" th:errors="*{transport}"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="status">Operational Status <span class="required">*</span></label>
+                                    <select id="status" th:field="*{status}" class="form-control"
+                                            th:classappend="${#fields.hasErrors('status')} ? 'is-invalid' : ''">
+                                        <option value="PLANNED">📅 PLANNED</option>
+                                        <option value="ONGOING">✈️ ONGOING</option>
+                                        <option value="COMPLETED">✅ COMPLETED</option>
+                                        <option value="CANCELLED">❌ CANCELLED</option>
+                                    </select>
+                                    <span class="error-feedback" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 2: Itinerary Timeline Builder -->
+                        <section class="form-section">
+                            <div class="section-title-wrap">
+                                <h3 class="section-title">
+                                    <span class="section-badge">2</span>
+                                    Day-by-Day Itinerary Schedule
+                                </h3>
+                                <button type="button" id="addItineraryBtn" class="btn btn-secondary btn-sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="12" y2="19"></line>
+                                    </svg>
+                                    Add Stop / Milestone
+                                </button>
+                            </div>
+
+                            <div id="itineraryList" class="dynamic-list-container">
+                                <!-- Existing Itinerary Items (if editing) -->
+                                <div th:each="item, stat : *{itinerary}" class="dynamic-item-row itinerary-row" th:attr="data-index=${stat.index}">
+                                    <div class="dynamic-row-header">
+                                        <span class="row-index-pill" th:text="'Stop #' + ${stat.count}">Stop #1</span>
+                                        <button type="button" class="btn-remove-row remove-itinerary-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div class="form-grid-3">
+                                        <div class="form-group" style="margin-bottom:0.75rem;">
+                                            <label class="form-label">Day Number <span class="required">*</span></label>
+                                            <input type="number" min="1" th:field="*{itinerary[__${stat.index}__].day}" class="form-control" required />
+                                        </div>
+                                        <div class="form-group" style="margin-bottom:0.75rem;">
+                                            <label class="form-label">Time <span class="required">*</span></label>
+                                            <input type="text" th:field="*{itinerary[__${stat.index}__].time}" class="form-control" required />
+                                        </div>
+                                        <div class="form-group" style="margin-bottom:0.75rem;">
+                                            <label class="form-label">Place / Attraction <span class="required">*</span></label>
+                                            <input type="text" th:field="*{itinerary[__${stat.index}__].place}" class="form-control" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <label class="form-label">Notes &amp; Activities</label>
+                                        <input type="text" th:field="*{itinerary[__${stat.index}__].note}" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 3: Expense Tracker Builder -->
+                        <section class="form-section">
+                            <div class="section-title-wrap">
+                                <h3 class="section-title">
+                                    <span class="section-badge">3</span>
+                                    Itemized Expenses &amp; Cost Forecast
+                                </h3>
+                                <button type="button" id="addExpenseBtn" class="btn btn-secondary btn-sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="12" y2="19"></line>
+                                    </svg>
+                                    Add Expense Item
+                                </button>
+                            </div>
+
+                            <div id="expensesList" class="dynamic-list-container">
+                                <!-- Existing Expense Items (if editing) -->
+                                <div th:each="exp, stat : *{expenses}" class="dynamic-item-row expense-row" th:attr="data-index=${stat.index}">
+                                    <div class="dynamic-row-header">
+                                        <span class="row-index-pill" th:text="'Expense #' + ${stat.count}">Expense #1</span>
+                                        <button type="button" class="btn-remove-row remove-expense-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div class="form-grid-3">
+                                        <div class="form-group" style="margin-bottom:0.75rem;">
+                                            <label class="form-label">Category</label>
+                                            <select th:field="*{expenses[__${stat.index}__].category}" class="form-control">
+                                                <option value="Flight">✈️ Flight / Transit</option>
+                                                <option value="Hotel">🏨 Hotel / Stay</option>
+                                                <option value="Food">🍽️ Food &amp; Dining</option>
+                                                <option value="Sightseeing">🎟️ Sightseeing / Tours</option>
+                                                <option value="Shopping">🛍️ Shopping</option>
+                                                <option value="Misc">📦 Miscellaneous</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="margin-bottom:0.75rem;">
+                                            <label class="form-label">Amount ($) <span class="required">*</span></label>
+                                            <input type="number" step="0.01" min="0" th:field="*{expenses[__${stat.index}__].amount}" 
+                                                   class="form-control expense-amount-input" required />
+                                        </div>
+                                        <div class="form-group" style="margin-bottom:0.75rem;">
+                                            <label class="form-label">Description</label>
+                                            <input type="text" th:field="*{expenses[__${stat.index}__].description}" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Budget Comparison Strip -->
+                            <div class="builder-summary-banner">
+                                <div>
+                                    <div class="summary-stat-label">Total Logged Expenses</div>
+                                    <div id="totalExpenseCalc" class="summary-stat-val" style="color:var(--c-emerald-600);">$0.00</div>
+                                </div>
+                                <div>
+                                    <div class="summary-stat-label">Remaining Budget Balance</div>
+                                    <div id="remainingBudgetCalc" class="summary-stat-val">$0.00</div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-footer-actions">
+                        <a th:href="@{/travel-planner}" class="btn btn-secondary">Discard &amp; Return</a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitTravelPlan">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            Save Travel Plan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Executive Footer -->
+    <div th:replace="~{fragments/navbar :: siteFooter}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

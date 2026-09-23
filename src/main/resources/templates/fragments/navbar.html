@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- Header / Navigation Bar Fragment -->
+<header th:fragment="siteNavbar(activeTab)" class="site-header">
+    <div class="header-inner">
+        <a th:href="@{/travel-planner}" class="brand-wrapper">
+            <img th:src="@{/images/logo.svg}" alt="Travel Planner Logo" class="brand-logo-img" />
+            <div class="brand-title">
+                TRAVEL PLANNER
+                <span>Enterprise Journey Suite</span>
+            </div>
+        </a>
+
+        <nav class="nav-actions">
+            <a th:href="@{/travel-planner}" 
+               th:classappend="${activeTab == 'dashboard' ? 'active' : ''}" 
+               class="nav-link">
+               Dashboard
+            </a>
+            <a th:href="@{/travel-planner/new}" 
+               class="btn btn-primary btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                New Journey
+            </a>
+        </nav>
+    </div>
+</header>
+
+<!-- Footer Fragment -->
+<footer th:fragment="siteFooter" class="site-footer">
+    <div class="footer-inner">
+        <div>
+            <span class="footer-brand">Travel Planner</span> &copy; 2026. All rights reserved.
+        </div>
+        <div class="footer-note">
+            Crafted with Professional Green &amp; White Theme &bull; Zero Gradients
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

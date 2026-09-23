@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <!-- Solid deep green rounded background -->
+  <rect width="48" height="48" rx="12" fill="#092f20"/>
+  <!-- Light green inner accent border -->
+  <rect x="2" y="2" width="44" height="44" rx="10" stroke="#1b5e3d" stroke-width="1.5" fill="none"/>
+  <!-- Solid compass/globe lines in varied greens -->
+  <circle cx="24" cy="24" r="14" stroke="#2e8b57" stroke-width="1.5" fill="#0f3d2a"/>
+  <!-- Latitude line -->
+  <ellipse cx="24" cy="24" rx="14" ry="5.5" stroke="#48bb78" stroke-width="1.2" fill="none"/>
+  <!-- Longitude meridian line -->
+  <ellipse cx="24" cy="24" rx="6" ry="14" stroke="#48bb78" stroke-width="1.2" fill="none"/>
+  <!-- Solid White & Mint Compass Needle / Plane icon -->
+  <path d="M24 13L28.5 23L24 21L19.5 23L24 13Z" fill="#ffffff"/>
+  <path d="M24 35L19.5 25L24 27L28.5 25L24 35Z" fill="#34d399"/>
+  <!-- Center compass pin -->
+  <circle cx="24" cy="24" r="2.2" fill="#ffffff"/>
+  <circle cx="24" cy="24" r="1.1" fill="#092f20"/>
+</svg>
