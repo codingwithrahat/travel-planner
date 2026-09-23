@@ -18,9 +18,9 @@ public class TravelPlanService {
         return travelPlanRepository.save(travelPlan);
     }
 
-    // Read All
+    // Read All (Recently added first)
     public List<TravelPlan> getAllTravelPlans() {
-        return travelPlanRepository.findAll();
+        return travelPlanRepository.findAllByOrderByIdDesc();
     }
 
     // Read One
@@ -34,7 +34,6 @@ public class TravelPlanService {
 
         TravelPlan existingPlan = getTravelPlanById(id);
 
-        existingPlan.setUserId(travelPlan.getUserId());
         existingPlan.setTitle(travelPlan.getTitle());
         existingPlan.setDestination(travelPlan.getDestination());
         existingPlan.setStartLocation(travelPlan.getStartLocation());

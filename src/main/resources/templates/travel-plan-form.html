@@ -43,23 +43,12 @@
                                     Voyage Information &amp; Logistics
                                 </h3>
                             </div>
-
-                            <div class="form-grid-2">
-                                <div class="form-group">
-                                    <label class="form-label" for="userId">Corporate / User ID <span class="required">*</span></label>
-                                    <input type="text" id="userId" th:field="*{userId}" class="form-control" 
-                                           th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid' : ''"
-                                           placeholder="e.g. USER-8842 or your name" />
-                                    <span class="error-feedback" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></span>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label" for="title">Journey Title <span class="required">*</span></label>
-                                    <input type="text" id="title" th:field="*{title}" class="form-control" 
-                                           th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
-                                           placeholder="e.g. Q4 Executive Summit in Tokyo" />
-                                    <span class="error-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label" for="title">Journey Title <span class="required">*</span></label>
+                                <input type="text" id="title" th:field="*{title}" class="form-control" 
+                                       th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Q4 Executive Summit in Tokyo" />
+                                <span class="error-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
                             </div>
 
                             <div class="form-grid-2">

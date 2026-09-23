@@ -44,7 +44,7 @@
                 <div class="stat-icon">✈️</div>
                 <div class="stat-body">
                     <div class="stat-label">Active Journeys</div>
-                    <div class="stat-value" th:text="${travelPlans != null ? #lists.size(travelPlans.?[status != null and status.toUpperCase() == 'ONGOING']) : 0}">0</div>
+                    <div class="stat-value" th:text="${ongoingCount != null ? ongoingCount : 0}">0</div>
                 </div>
             </div>
 
@@ -52,7 +52,7 @@
                 <div class="stat-icon">📅</div>
                 <div class="stat-body">
                     <div class="stat-label">Upcoming Plans</div>
-                    <div class="stat-value" th:text="${travelPlans != null ? #lists.size(travelPlans.?[status != null and status.toUpperCase() == 'PLANNED']) : 0}">0</div>
+                    <div class="stat-value" th:text="${plannedCount != null ? plannedCount : 0}">0</div>
                 </div>
             </div>
 
@@ -60,7 +60,7 @@
                 <div class="stat-icon">💵</div>
                 <div class="stat-body">
                     <div class="stat-label">Allocated Budget</div>
-                    <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(travelPlans != null ? #aggregates.sum(travelPlans.![budget != null ? budget : 0.0]) : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</div>
+                    <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(totalBudget != null ? totalBudget : 0.0, 1, 'COMMA', 2, 'POINT')}">$0.00</div>
                 </div>
             </div>
         </section>
@@ -160,10 +160,6 @@
                         <span class="badge-tag">
                             <span>💳</span>
                             <span th:text="${plan.expenses != null ? #lists.size(plan.expenses) + ' Expenses' : '0 Expenses'}">0 Expenses</span>
-                        </span>
-                        <span class="badge-tag" style="color:var(--c-text-light);">
-                            <span>ID:</span>
-                            <span th:text="${plan.userId}">User</span>
                         </span>
                     </div>
                 </div>

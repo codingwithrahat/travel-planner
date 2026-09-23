@@ -16,14 +16,30 @@ public class TravelPlanController {
 
     private final TravelPlanService travelPlanService;
 
-    // GET - All travel plans
+    // GET - All travel plans (sorted by recently added first)
     @GetMapping
     public String getAllTravelPlans(Model model) {
+        List<TravelPlan> plans = travelPlanService.getAllTravelPlans();
+        if (plans == null) {
+            plans = List.of();
+        }
 
-        model.addAttribute(
-                "travelPlans",
-                travelPlanService.getAllTravelPlans()
-        );
+        long ongoingCount = plans.stream()
+                .filter(p -> p.getStatus() != null && "ONGOING".equalsIgnoreCase(p.getStatus()))
+                .count();
+
+        long plannedCount = plans.stream()
+                .filter(p -> p.getStatus() != null && "PLANNED".equalsIgnoreCase(p.getStatus()))
+                .count();
+
+        double totalBudget = plans.stream()
+                .mapToDouble(p -> p.getBudget() != null ? p.getBudget() : 0.0)
+                .sum();
+
+        model.addAttribute("travelPlans", plans);
+        model.addAttribute("ongoingCount", ongoingCount);
+        model.addAttribute("plannedCount", plannedCount);
+        model.addAttribute("totalBudget", totalBudget);
 
         return "travel-planner";
     }
@@ -85,7 +101,22 @@ public class TravelPlanController {
     // GET - View details
     @GetMapping("/{id}")
     public String getTravelPlanDetails(@PathVariable String id, Model model) {
-        model.addAttribute("travelPlan", travelPlanService.getTravelPlanById(id));
+        TravelPlan plan = travelPlanService.getTravelPlanById(id);
+
+        double totalExpenses = 0.0;
+        if (plan.getExpenses() != null) {
+            totalExpenses = plan.getExpenses().stream()
+                    .mapToDouble(e -> e.getAmount() != null ? e.getAmount() : 0.0)
+                    .sum();
+        }
+
+        double budget = plan.getBudget() != null ? plan.getBudget() : 0.0;
+        double budgetPercent = budget > 0.0 ? Math.min(100.0, (totalExpenses / budget) * 100.0) : 0.0;
+
+        model.addAttribute("travelPlan", plan);
+        model.addAttribute("totalExpenses", totalExpenses);
+        model.addAttribute("budgetPercent", budgetPercent);
+
         return "travel-plan-details";
     }
 
